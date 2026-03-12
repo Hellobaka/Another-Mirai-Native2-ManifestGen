@@ -28,7 +28,6 @@ namespace AMN.ManifestGen
                     OutputFilePath = args[i + 1];
                 }
             }
-
             if (string.IsNullOrEmpty(InputFilePath) || string.IsNullOrEmpty(OutputFilePath))
             {
                 Console.Error.WriteLine("未指定输入文件或输出文件路径");
@@ -59,7 +58,8 @@ namespace AMN.ManifestGen
             var mr = pe.GetMetadataReader();
 
             AppInfo? found = null;
-
+            AppInfo.Event[] events = Array.Empty<AppInfo.Event>();
+            AppInfo.Menu[] menus = Array.Empty<AppInfo.Menu>();
             foreach (var typeHandle in mr.TypeDefinitions)
             {
                 var td = mr.GetTypeDefinition(typeHandle);
@@ -69,6 +69,11 @@ namespace AMN.ManifestGen
                 {
                     continue;
                 }
+
+                var e = EventBuilder.BuildEventsFromEntryType(mr, td);
+                events = [.. events, .. e];
+                var m = MenuBuilder.BuildMenusFromEntryType(mr, td);
+                menus = [.. menus, .. m];
 
                 foreach (var caHandle in td.GetCustomAttributes())
                 {
@@ -90,8 +95,6 @@ namespace AMN.ManifestGen
                         version = version,
                         author = author ?? "",
                         description = desc ?? "",
-                        _event = EventBuilder.BuildEventsFromEntryType(mr, td),
-                        menu = MenuBuilder.BuildMenusFromEntryType(mr, td),
                         status = Array.Empty<object>(),
                         auth = Enum.GetValues(typeof(PluginAPIType))
                                 .Cast<PluginAPIType>()
@@ -100,7 +103,6 @@ namespace AMN.ManifestGen
                                 .OrderBy(x => x)
                                 .ToArray(),
                     };
-
                     if (found != null)
                     {
                         throw new InvalidOperationException(
@@ -110,6 +112,8 @@ namespace AMN.ManifestGen
                     found = manifest;
                 }
             }
+            found._event = events;
+            found.menu = menus;
 
             return found ?? throw new InvalidOperationException($"未找到 [{PluginAttributeFullName}] 标记的入口类型。");
         }

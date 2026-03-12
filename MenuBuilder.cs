@@ -7,7 +7,6 @@ namespace AMN.ManifestGen
 {
     public static class MenuBuilder
     {
-        // TODO：改成你真实 MenuAttribute 完整名
         private const string MenuAttributeFullName = "Another_Mirai_Native.Abstractions.Attributes.MenuAttribute";
 
         public static AppInfo.Menu[] BuildMenusFromEntryType(MetadataReader mr, TypeDefinition entryTypeDef)
