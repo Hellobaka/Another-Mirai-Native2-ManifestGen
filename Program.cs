@@ -58,7 +58,23 @@ namespace AMN.ManifestGen
             var mr = pe.GetMetadataReader();
 
             AppInfo? found = null;
-            AppInfo.Event[] events = Array.Empty<AppInfo.Event>();
+            AppInfo.Event[] events = 
+                [
+                    new AppInfo.Event{
+                        id = 1003,
+                        type = 1003,
+                        function = "OnEnableAsync",
+                        name = "插件启用事件",
+                        priority = 30000
+                    },
+                    new AppInfo.Event{
+                        id = 1004,
+                        type = 1004,
+                        function = "OnDisableAsync",
+                        name = "插件禁用事件",
+                        priority = 30000
+                    },
+                ];
             AppInfo.Menu[] menus = Array.Empty<AppInfo.Menu>();
             foreach (var typeHandle in mr.TypeDefinitions)
             {
