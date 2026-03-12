@@ -42,6 +42,7 @@ namespace AMN.ManifestGen
             var info = ReadManifest(InputFilePath);
 
             File.WriteAllText(OutputFilePath, JsonConvert.SerializeObject(info, Formatting.Indented));
+            Console.WriteLine($"Mainfest 已生成成功，Json文件写出到 {OutputFilePath}");
             return 0;
         }
 

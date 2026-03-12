@@ -10,7 +10,7 @@ namespace AMN.ManifestGen
     public static class PriorityReader
     {
         // TODO：改成你真实 Attribute 完整名
-        private const string EventPriorityAttributeFullName = "Another_Mirai_Native.Abstractions.EventPriorityAttribute";
+        private const string EventPriorityAttributeFullName = "Another_Mirai_Native.Abstractions.Attributes.EventPriorityAttribute";
 
         // 返回：type(int) -> priority(int)
         public static Dictionary<int, int> ReadEventPriorities(MetadataReader mr, TypeDefinition entryTypeDef)
