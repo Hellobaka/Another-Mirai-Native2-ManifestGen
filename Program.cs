@@ -15,6 +15,10 @@ namespace AMN.ManifestGen
 
         private static string OutputFilePath { get; set; }
 
+        private static string TargetFramework { get; set; }
+
+        private static bool IsTargetNetFramework { get; set; } = true;
+
         private static int Main(string[] args)
         {
             for (int i = 0; i < args.Length; i++)
@@ -26,6 +30,11 @@ namespace AMN.ManifestGen
                 else if (args[i].ToLower() == "-o" && i < args.Length - 1)
                 {
                     OutputFilePath = args[i + 1];
+                }
+                else if (args[i].ToLower() == "-t" && i < args.Length - 1)
+                {
+                    TargetFramework = args[i + 1];
+                    IsTargetNetFramework = CheckIsTargetNetFramework();
                 }
             }
             if (string.IsNullOrEmpty(InputFilePath) || string.IsNullOrEmpty(OutputFilePath))
@@ -41,8 +50,28 @@ namespace AMN.ManifestGen
             var info = ReadManifest(InputFilePath);
 
             File.WriteAllText(OutputFilePath, JsonConvert.SerializeObject(info, Formatting.Indented));
-            Console.WriteLine($"Mainfest 已生成成功，Json文件写出到 {OutputFilePath}");
+            Console.WriteLine($"Manifest 已生成成功，Json文件写出到 {OutputFilePath}");
             return 0;
+        }
+
+        private static bool CheckIsTargetNetFramework()
+        {
+            if (string.IsNullOrWhiteSpace(TargetFramework))
+            {
+                throw new InvalidDataException("无效的生成目标");
+            }
+            Console.WriteLine($"正在处理生成目标: {TargetFramework}");
+            int identityPos = TargetFramework.IndexOf("net", StringComparison.OrdinalIgnoreCase);
+            int dotPos = TargetFramework.IndexOf('.', identityPos + 3);
+            string possibleNetVersion = TargetFramework.Substring(identityPos + 3, dotPos >= 0 ? dotPos : TargetFramework.Length - identityPos);
+            if (int.TryParse(possibleNetVersion, out int netVersion))
+            {
+                return netVersion >= 40;
+            }
+            else
+            {
+                throw new InvalidDataException($"无效的.Net版本: {possibleNetVersion}");
+            }
         }
 
         public static AppInfo ReadManifest(string assemblyPath)
@@ -76,6 +105,7 @@ namespace AMN.ManifestGen
                     },
                 ];
             AppInfo.Menu[] menus = Array.Empty<AppInfo.Menu>();
+            string appId = string.Empty;
             foreach (var typeHandle in mr.TypeDefinitions)
             {
                 var td = mr.GetTypeDefinition(typeHandle);
@@ -102,8 +132,8 @@ namespace AMN.ManifestGen
 
                     // 解码 attribute 的参数（假设：.ctor(string id, string name, string version)，可带命名参数 Author/Description）
                     var (id, name, version, author, desc) = MetadataHelpers.DecodePluginAttribute(mr, ca);
-
                     var fullTypeName = MetadataHelpers.GetFullTypeName(mr, td);
+                    appId = id;
 
                     var manifest = new AppInfo
                     {
@@ -130,6 +160,11 @@ namespace AMN.ManifestGen
             }
             found._event = events;
             found.menu = menus;
+            Console.WriteLine($"AppId: {appId}; 插件名称: {found.name}; 版本: {found.version}; 作者: {found.author}; 描述: {found.description}");
+            Console.WriteLine($"检索到 {found._event.Length} 条事件处理器");
+            Console.WriteLine($"检索到 {found.menu.Length} 个窗口处理器");
+            Console.WriteLine($"生成目标是: {TargetFramework}");
+            found.LoaderType = IsTargetNetFramework ? 0 : 1;
 
             return found ?? throw new InvalidOperationException($"未找到 [{PluginAttributeFullName}] 标记的入口类型。");
         }

@@ -52,7 +52,7 @@ namespace AMN.ManifestGen
                 }
 
                 // fallback：如果没提供 function，就用一个固定值（或用 entry type name）
-                function ??= "Menu";
+                function ??= name;
 
                 menus.Add(new AppInfo.Menu
                 {

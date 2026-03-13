@@ -4,6 +4,8 @@ namespace AMN.ManifestGen
 {
     public class AppInfo
     {
+        public int LoaderType { get; set; } = 0;
+
         public int ret { get; set; } = 1;
 
         public int apiver { get; set; } = 9;
