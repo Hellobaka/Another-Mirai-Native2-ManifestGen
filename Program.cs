@@ -63,7 +63,7 @@ namespace AMN.ManifestGen
             Console.WriteLine($"正在处理生成目标: {TargetFramework}");
             int identityPos = TargetFramework.IndexOf("net", StringComparison.OrdinalIgnoreCase);
             int dotPos = TargetFramework.IndexOf('.', identityPos + 3);
-            string possibleNetVersion = TargetFramework.Substring(identityPos + 3, dotPos >= 0 ? dotPos : TargetFramework.Length - identityPos);
+            string possibleNetVersion = TargetFramework.Substring(identityPos + 3, dotPos >= 0 ? dotPos - 3 : TargetFramework.Length - identityPos - 3);
             if (int.TryParse(possibleNetVersion, out int netVersion))
             {
                 return netVersion >= 40;
