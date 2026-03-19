@@ -9,7 +9,7 @@ namespace AMN.ManifestGen
         public static readonly Dictionary<string, (int Type, string Name)> Map = new()
         {
             ["Another_Mirai_Native.Abstractions.Handlers.IGroupMessageHandler"] = ((int)PluginEventType.GroupMsg, "群消息"),
-            ["Another_Mirai_Native.Abstractions.Handlers.IPrivateMessageHandle"] = ((int)PluginEventType.PrivateMsg, "私聊消息"),
+            ["Another_Mirai_Native.Abstractions.Handlers.IPrivateMessageHandler"] = ((int)PluginEventType.PrivateMsg, "私聊消息"),
 
             ["Another_Mirai_Native.Abstractions.Handlers.IGroupFileUploadHandler"] = ((int)PluginEventType.Upload, "文件上传"),
 
