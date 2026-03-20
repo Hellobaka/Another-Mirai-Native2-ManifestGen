@@ -26,22 +26,8 @@ namespace AMN.ManifestGen
             var name = decoded.FixedArguments[1].Value as string ?? "";
             var version = decoded.FixedArguments[2].Value as string ?? "";
 
-            string? author = null;
-            string? description = null;
-
-            foreach (var na in decoded.NamedArguments)
-            {
-                var val = na.Value as string;
-
-                if (na.Name == "Author")
-                {
-                    author = val;
-                }
-                else if (na.Name == "Description")
-                {
-                    description = val;
-                }
-            }
+            string? author = decoded.FixedArguments.Length > 3 ? (decoded.FixedArguments[3].Value as string ?? "") : null;
+            string? description = decoded.FixedArguments.Length > 3 ? (decoded.FixedArguments[4].Value as string ?? "") : null;
 
             return (id, name, version, author, description);
         }
