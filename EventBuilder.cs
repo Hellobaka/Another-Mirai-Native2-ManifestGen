@@ -24,7 +24,7 @@ namespace AMN.ManifestGen
 
                 events.Add(new AppInfo.Event
                 {
-                    id = info.Type,          // 建议：直接用 type 作为稳定 id
+                    id = events.Count + 2 + 1,
                     type = info.Type,
                     name = info.Name,
                     function = ifaceShortName, // 或 ifaceFull
