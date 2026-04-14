@@ -75,10 +75,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppInfo.cs" />
+    <Compile Include="DllManifest.cs" />
     <Compile Include="EventBuilder.cs" />
     <Compile Include="EventInterfaceMap.cs" />
+    <Compile Include="ManifestReader.cs" />
     <Compile Include="MenuBuilder.cs" />
     <Compile Include="MetadataHelpers.cs" />
+    <Compile Include="OutputCleaner.cs" />
     <Compile Include="PluginAPIType.cs" />
     <Compile Include="PluginEventType.cs" />
     <Compile Include="PriorityReader.cs" />
