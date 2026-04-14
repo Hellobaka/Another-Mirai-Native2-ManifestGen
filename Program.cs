@@ -31,6 +31,10 @@ namespace AMN.ManifestGen
 
         private static int Main(string[] args)
         {
+            //args = ["-i", @"D:\Code\DemoPlugin\bin\Debug\net9.0\Native_DemoPlugin.dll", 
+            //    "-o", @"D:\Code\DemoPlugin\bin\Debug\net9.0\Native_DemoPlugin.json",
+            //    "-t", "net9.0",
+            //    "-c"];
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i].ToLower() == "-i" && i < args.Length - 1)

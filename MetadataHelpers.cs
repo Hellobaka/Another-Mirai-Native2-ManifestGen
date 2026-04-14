@@ -31,14 +31,66 @@ namespace AMN.ManifestGen
 
             return (id, name, version, author, description);
         }
+
+        /// <summary>
+        /// 获取该类型及其整条继承链上所有实现的接口全名。
+        /// 对于外部程序集基类 CommandHandlerBase，直接补充其已知接口。
+        /// </summary>
         public static IEnumerable<string> GetImplementedInterfaceFullNames(MetadataReader mr, TypeDefinition typeDef)
         {
-            foreach (var ih in typeDef.GetInterfaceImplementations())
+            var visited = new HashSet<string>(StringComparer.Ordinal);
+            var results = new List<string>();
+            var current = typeDef;
+
+            while (true)
             {
-                var impl = mr.GetInterfaceImplementation(ih);
-                yield return GetTypeFullName(mr, impl.Interface);
+                // 收集当前层的直接接口
+                foreach (var ih in current.GetInterfaceImplementations())
+                {
+                    var impl = mr.GetInterfaceImplementation(ih);
+                    var fullName = GetTypeFullName(mr, impl.Interface);
+                    if (!string.IsNullOrEmpty(fullName) && visited.Add(fullName))
+                        results.Add(fullName);
+                }
+
+                // 向上走一层基类
+                var baseHandle = current.BaseType;
+                if (baseHandle.IsNil)
+                    break;
+
+                if (baseHandle.Kind == HandleKind.TypeDefinition)
+                {
+                    // 基类在同一程序集内，继续向上遍历
+                    current = mr.GetTypeDefinition((TypeDefinitionHandle)baseHandle);
+                }
+                else if (baseHandle.Kind == HandleKind.TypeReference)
+                {
+                    // 外部程序集基类：特判 CommandHandlerBase
+                    var tr = mr.GetTypeReference((TypeReferenceHandle)baseHandle);
+                    if (mr.GetString(tr.Name) == "CommandHandlerBase")
+                    {
+                        foreach (var iface in CommandHandlerBaseInterfaces)
+                        {
+                            if (visited.Add(iface))
+                                results.Add(iface);
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                    break;
+                }
             }
+
+            return results;
         }
+
+        private static readonly string[] CommandHandlerBaseInterfaces =
+        [
+            "Another_Mirai_Native.Abstractions.Handlers.IGroupMessageHandler",
+            "Another_Mirai_Native.Abstractions.Handlers.IPrivateMessageHandler",
+        ];
 
         public static bool IsTargetAttribute(MetadataReader mr, CustomAttribute ca, string attributeFullName)
         {
