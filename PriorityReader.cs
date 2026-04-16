@@ -9,7 +9,6 @@ namespace AMN.ManifestGen
 {
     public static class PriorityReader
     {
-        // TODO：改成你真实 Attribute 完整名
         private const string EventPriorityAttributeFullName = "Another_Mirai_Native.Abstractions.Attributes.EventPriorityAttribute";
 
         // 返回：type(int) -> priority(int)
@@ -39,7 +38,6 @@ namespace AMN.ManifestGen
                 if (priVal is not int priority)
                     throw new InvalidOperationException("EventPriorityAttribute 第二个参数无法解析为 int（Priority）。");
 
-                // 如果重复定义同一个事件的优先级：你可以选择覆盖/报错
                 dict[eventType] = priority;
             }
 
