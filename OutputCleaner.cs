@@ -34,11 +34,11 @@ namespace AMN.ManifestGen
             string inputFileName = Path.GetFileName(inputFilePath);
             string renamedFilePath = Path.Combine(Path.GetDirectoryName(inputFilePath), "Native_" + inputFileName);
             if (File.Exists(renamedFilePath))
+            {
                 File.Delete(renamedFilePath);
+            }
 
-            string outputFilePath = Path.ChangeExtension(inputFilePath, ".Merged.dll");
-            if (File.Exists(outputFilePath))
-                File.Delete(outputFilePath);
+            string outputFilePath = inputFilePath;
 
             DllManifest[] manifests = JsonConvert.DeserializeObject<DllManifest[]>(File.ReadAllText(dependencyManifestFileName));
             DllManifest[] localManifests = Directory.GetFiles(Path.GetDirectoryName(inputFilePath), "*.dll")
@@ -52,9 +52,15 @@ namespace AMN.ManifestGen
                 var local = localManifests.FirstOrDefault(m =>
                 {
                     if (m.AssemblyName != manifest.AssemblyName)
+                    {
                         return false;
+                    }
+
                     if (ignoreDependencyVersion)
+                    {
                         return true; // 只匹配名称，忽略版本和公钥
+                    }
+
                     return m.Version == manifest.Version && m.PublicToken == manifest.PublicToken;
                 });
                 if (local != null && File.Exists(local.FullPath))
@@ -66,7 +72,7 @@ namespace AMN.ManifestGen
 
             // 剩余的dll打包
             var otherDlls = localManifests.Where(x => !duplicatedDlls.Any(o => o.Equals(x)));
-                //.Where(x => !IsFrameworkDll(x));
+            //.Where(x => !IsFrameworkDll(x));
 
             // 获取 .NET 运行时目录用于解析框架程序集
             var runtimeLibDirs = GetRuntimeLibDirectories(targetFramework);
@@ -80,7 +86,9 @@ namespace AMN.ManifestGen
             command += $"/lib:\"{Path.GetDirectoryName(inputFilePath)}\" ";
             // 添加 .NET 运行时目录作为 lib（用于解析框架程序集引用）
             foreach (var dir in runtimeLibDirs)
+            {
                 command += $"/lib:\"{dir}\" ";
+            }
 
             command += $"/out:\"{outputFilePath}\" \"{inputFilePath}\" ";
 
@@ -192,7 +200,9 @@ namespace AMN.ManifestGen
         private static string GetRuntimeVersionFromTargetFramework(string targetFramework)
         {
             if (string.IsNullOrEmpty(targetFramework))
+            {
                 return null;
+            }
 
             // net9 -> 9.0, net9.0 -> 9.0, net8 -> 8.0, net8.0 -> 8.0
             var tfm = targetFramework.ToLowerInvariant();
@@ -203,10 +213,14 @@ namespace AMN.ManifestGen
                 {
                     var dotIndex = versionPart.IndexOf('.');
                     if (dotIndex > 0)
+                    {
                         return versionPart; // 已经是 X.Y 格式
+                    }
 
                     if (int.TryParse(versionPart, out var major) && major >= 5)
+                    {
                         return $"{major}.0";
+                    }
                 }
             }
 
