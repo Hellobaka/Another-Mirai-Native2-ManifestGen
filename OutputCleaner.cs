@@ -69,9 +69,10 @@ namespace AMN.ManifestGen
                     duplicatedDlls.Add(local);
                 }
             }
-
+            string[] ignores = ["Another-Mirai-Native.Abstractions.dll"];
             // 剩余的dll打包
-            var otherDlls = localManifests.Where(x => !duplicatedDlls.Any(o => o.Equals(x)));
+            var otherDlls = localManifests.Where(x => !duplicatedDlls.Any(o => o.Equals(x)))
+                .Where(x => !ignores.Contains(Path.GetFileName(x.FullPath)));
             //.Where(x => !IsFrameworkDll(x));
 
             // 获取 .NET 运行时目录用于解析框架程序集
@@ -93,6 +94,11 @@ namespace AMN.ManifestGen
             command += $"/out:\"{outputFilePath}\" \"{inputFilePath}\" ";
 
             Console.WriteLine($"[ILRepack] 待合并的 DLL 数量: {otherDlls.Count()}");
+            if(otherDlls.Count() == 0)
+            {
+                Console.WriteLine($"[ILRepack] 无需 ILRepack");
+                return 0;
+            }
             foreach (var dll in otherDlls)
             {
                 command += $"\"{dll.FullPath}\" ";
