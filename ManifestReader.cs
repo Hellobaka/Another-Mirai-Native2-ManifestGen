@@ -8,7 +8,7 @@ namespace AMN.ManifestGen
 {
     internal static class ManifestReader
     {
-        private const string PluginAttributeFullName = "Another_Mirai_Native.Abstractions.Models.PluginInfo";
+        private const string PluginAttributeFullName = "Another_Mirai_Native.Abstractions.Attributes.PluginInfo";
 
         public static AppInfo ReadManifest(string assemblyPath, string targetFramework, bool isTargetNetFramework)
         {

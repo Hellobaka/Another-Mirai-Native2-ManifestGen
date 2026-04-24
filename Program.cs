@@ -56,10 +56,18 @@ namespace AMN.ManifestGen
                 return -1;
             }
 
-            var info = ManifestReader.ReadManifest(inputFilePath, targetFramework, isTargetNetFramework);
+            try
+            {
+                var info = ManifestReader.ReadManifest(inputFilePath, targetFramework, isTargetNetFramework);
 
-            File.WriteAllText(outputFilePath, JsonConvert.SerializeObject(info, Formatting.Indented));
-            Console.WriteLine($"Manifest 已生成成功，Json文件写出到 {outputFilePath}");
+                File.WriteAllText(outputFilePath, JsonConvert.SerializeObject(info, Formatting.Indented));
+                Console.WriteLine($"Manifest 已生成成功，Json文件写出到 {outputFilePath}");
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine("生成 Manifest 时发生错误\n" + e.ToString());
+                return -1;
+            }
 
             if (cleanOutputRequired)
             {
