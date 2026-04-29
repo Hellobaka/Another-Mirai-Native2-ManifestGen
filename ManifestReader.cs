@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Security.Cryptography;
 
 namespace AMN.ManifestGen
 {
@@ -48,8 +49,8 @@ namespace AMN.ManifestGen
                     if (!MetadataHelpers.IsTargetAttribute(mr, ca, PluginAttributeFullName))
                         continue;
 
-                    // 解码 attribute 的参数（假设：.ctor(string id, string name, string version)，可带命名参数 Author/Description）
-                    var (id, name, version, author, desc) = MetadataHelpers.DecodePluginAttribute(mr, ca);
+                    // 解码 attribute 的参数（ctor(string id, string name, string version)，可带命名参数 Description Author）
+                    var (id, name, version, desc, author) = MetadataHelpers.DecodePluginAttribute(mr, ca);
                     appId = id;
 
                     var manifest = new AppInfo

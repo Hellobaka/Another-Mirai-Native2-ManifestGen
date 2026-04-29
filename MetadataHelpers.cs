@@ -13,7 +13,7 @@ namespace AMN.ManifestGen
             return string.IsNullOrEmpty(ns) ? name : $"{ns}.{name}";
         }
 
-        public static (string Id, string Name, string Version, string? Author, string? Description) DecodePluginAttribute(MetadataReader mr, CustomAttribute ca)
+        public static (string Id, string Name, string Version, string? Description, string? Author) DecodePluginAttribute(MetadataReader mr, CustomAttribute ca)
         {
             var decoded = ca.DecodeValue(new SimpleTypeProvider());
 
@@ -26,10 +26,10 @@ namespace AMN.ManifestGen
             var name = decoded.FixedArguments[1].Value as string ?? "";
             var version = decoded.FixedArguments[2].Value as string ?? "";
 
-            string? author = decoded.FixedArguments.Length > 3 ? (decoded.FixedArguments[3].Value as string ?? "") : null;
-            string? description = decoded.FixedArguments.Length > 3 ? (decoded.FixedArguments[4].Value as string ?? "") : null;
+            string? description = decoded.FixedArguments.Length > 3 ? (decoded.FixedArguments[3].Value as string ?? "") : null;
+            string? author = decoded.FixedArguments.Length > 3 ? (decoded.FixedArguments[4].Value as string ?? "") : null;
 
-            return (id, name, version, author, description);
+            return (id, name, version, description, author);
         }
 
         /// <summary>
