@@ -16,6 +16,7 @@ namespace AMN.ManifestGen
             string inputFilePath = null;
             string outputFilePath = null;
             string targetFramework = null;
+            string ilrepackAdditionParam = null;
             bool isTargetNetFramework = true;
             bool cleanOutputRequired = false;
             bool ignoreDependencyVersion = false;
@@ -42,6 +43,10 @@ namespace AMN.ManifestGen
                 else if (args[i] == "--ignoreDependencyVersion")
                 {
                     ignoreDependencyVersion = true;
+                }
+                else if (args[i] == "--ilrepackAdditionParam")
+                {
+                    ilrepackAdditionParam = args[i + 1];
                 }
             }
 
@@ -71,7 +76,7 @@ namespace AMN.ManifestGen
 
             if (cleanOutputRequired)
             {
-                return OutputCleaner.CleanOutput(inputFilePath, targetFramework, ignoreDependencyVersion);
+                return OutputCleaner.CleanOutput(inputFilePath, targetFramework, ignoreDependencyVersion, ilrepackAdditionParam);
             }
 
             return 0;
