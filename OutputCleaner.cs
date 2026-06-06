@@ -14,7 +14,7 @@ namespace AMN.ManifestGen
         private const string DependencyManifestFileName = "DependencyManifest-dotnet9.json";
         private const string ILRepackFileName = "ILRepack.exe";
 
-        public static int CleanOutput(string inputFilePath, string targetFramework, bool ignoreDependencyVersion, string ilrepackAdditionParam)
+        public static int CleanOutput(string inputFilePath, string targetFramework, bool ignoreDependencyVersion, string ilrepackAdditionParam, bool ilRepackKeepPDB)
         {
             Console.WriteLine("开始整理输出目录");
             string dependencyManifestFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DependencyManifestFileName);
@@ -82,7 +82,7 @@ namespace AMN.ManifestGen
             Console.WriteLine($"[ILRepack] 解析到运行时版本: {GetRuntimeVersionFromTargetFramework(targetFramework) ?? "未知"}");
             Console.WriteLine($"[ILRepack] 找到 {runtimeLibDirs.Count} 个运行时目录");
 
-            string command = $"/parallel /ndebug {(string.IsNullOrWhiteSpace(ilrepackAdditionParam) ? "" : ilrepackAdditionParam + " ")}";
+            string command = $"/parallel {(ilRepackKeepPDB  ? "" : "/ndebug")} {(string.IsNullOrWhiteSpace(ilrepackAdditionParam) ? "" : ilrepackAdditionParam + " ")}";
             // 添加输出目录作为 lib
             command += $"/lib:\"{Path.GetDirectoryName(inputFilePath)}\" ";
             // 添加 .NET 运行时目录作为 lib（用于解析框架程序集引用）
@@ -93,6 +93,7 @@ namespace AMN.ManifestGen
 
             command += $"/out:\"{outputFilePath}\" \"{inputFilePath}\" ";
 
+            Console.WriteLine($"[ILRepack] {command}");
             Console.WriteLine($"[ILRepack] 待合并的 DLL 数量: {otherDlls.Count()}");
             if(otherDlls.Count() == 0)
             {

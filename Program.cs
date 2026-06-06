@@ -19,6 +19,7 @@ namespace AMN.ManifestGen
             string ilrepackAdditionParam = null;
             bool isTargetNetFramework = true;
             bool cleanOutputRequired = false;
+            bool ilRepackKeepPDB = false;
             bool ignoreDependencyVersion = false;
 
             for (int i = 0; i < args.Length; i++)
@@ -48,6 +49,10 @@ namespace AMN.ManifestGen
                 {
                     ilrepackAdditionParam = args[i + 1];
                 }
+                else if (args[i] == "--ilRepackKeepPDB")
+                {
+                    ilRepackKeepPDB = true;
+                }
             }
 
             if (string.IsNullOrEmpty(inputFilePath) || string.IsNullOrEmpty(outputFilePath))
@@ -76,7 +81,7 @@ namespace AMN.ManifestGen
 
             if (cleanOutputRequired)
             {
-                return OutputCleaner.CleanOutput(inputFilePath, targetFramework, ignoreDependencyVersion, ilrepackAdditionParam);
+                return OutputCleaner.CleanOutput(inputFilePath, targetFramework, ignoreDependencyVersion, ilrepackAdditionParam, ilRepackKeepPDB);
             }
 
             return 0;
