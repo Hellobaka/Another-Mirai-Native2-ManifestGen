@@ -66,8 +66,21 @@ namespace AMN.ManifestGen
                 return -1;
             }
 
+            // 先合并依赖，再扫描元数据。否则多项目插件（如 Core + UI 分离）里
+            // UI 项目的事件处理器和 Menu 声明不会被写入 manifest JSON。
+            if (cleanOutputRequired)
+            {
+                int cleanResult = OutputCleaner.CleanOutput(inputFilePath, targetFramework,
+                    ignoreDependencyVersion, ilrepackAdditionParam, ilRepackKeepPDB);
+                if (cleanResult != 0)
+                {
+                    return cleanResult;
+                }
+            }
+
             try
             {
+                // 此时 inputFilePath 已是合并后的 DLL，包含所有被合入的类型
                 var info = ManifestReader.ReadManifest(inputFilePath, targetFramework, isTargetNetFramework);
 
                 File.WriteAllText(outputFilePath, JsonConvert.SerializeObject(info, Formatting.Indented));
@@ -77,11 +90,6 @@ namespace AMN.ManifestGen
             {
                 Console.Error.WriteLine("生成 Manifest 时发生错误\n" + e.ToString());
                 return -1;
-            }
-
-            if (cleanOutputRequired)
-            {
-                return OutputCleaner.CleanOutput(inputFilePath, targetFramework, ignoreDependencyVersion, ilrepackAdditionParam, ilRepackKeepPDB);
             }
 
             return 0;
